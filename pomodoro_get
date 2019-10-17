@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# Get timer status
+
+if [ $# -le 0 ]; then
+  echo "Insuficient input paramteters"
+  exit 1
+fi
+if ! [ -f $1 ]; then
+  echo "Missing info file"
+  exit 2
+fi
+
+current=$(cat $1 | grep "current " | awk '{print $2}')
+stime=$(cat $1 | grep "start " | awk '{print $2}')
+time=$(cat $1 | grep "$current " | awk '{print $2}')
+next=$(cat $1 | grep "$current " | awk '{print $3}')
+
+remaining=$(( $time - $(date +%s) + $stime ))
+
+if [ $remaining -le 0 ]; then
+  sed -i "s/^current .*\$/current $next/" $1
+  sed -i "s/^start .*\$/start $(date +%s)/" $1
+  pomodoro_get $1 
+else
+  echo "$current $remaining"
+fi
+
