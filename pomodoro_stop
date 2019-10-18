@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# Get timer status
+
+if [ $# -le 0 ]; then
+  echo "Insuficient input paramteters"
+  exit 1
+fi
+if ! [ -f $1 ]; then
+  echo "Missing info file"
+  exit 2
+fi
+
+sed -i "s/^current .*\$/current null/" $1
+sed -i "s/^start .*\$/start 0/" $1

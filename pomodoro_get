@@ -12,6 +12,9 @@ if ! [ -f $1 ]; then
 fi
 
 current=$(cat $1 | grep "current " | awk '{print $2}')
+if [ $current = "null" ]; then
+  exit
+fi
 stime=$(cat $1 | grep "start " | awk '{print $2}')
 time=$(cat $1 | grep "$current " | awk '{print $2}')
 next=$(cat $1 | grep "$current " | awk '{print $3}')
@@ -23,6 +26,9 @@ if [ $remaining -le 0 ]; then
   sed -i "s/^start .*\$/start $(date +%s)/" $1
   pomodoro_get $1 
 else
-  echo "$current $remaining"
+  min=$(( $remaining / 60 ))
+  sec=$(( $remaining % 60 ))
+  sec=$(printf "%02d" $sec)
+  echo "$current $min:$sec"
 fi
 

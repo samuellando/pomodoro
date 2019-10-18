@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# Start a timer in the background
+
+if [ $# -le 0 ]; then
+  echo "Insuficient input paramteters"
+  exit 1
+fi
+if ! [ -f $1 ]; then
+  echo "Missing info file"
+  exit 2
+fi
+
+cat $1 | awk '/#profiles/{flag=1;next}flag{print $1}'
+
