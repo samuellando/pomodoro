@@ -13,7 +13,6 @@ fi
 
 current=$(cat $1 | grep "current " | awk '{print $2}')
 if [ $current = "null" ]; then
-  echo "none"
   exit
 fi
 stime=$(cat $1 | grep "start " | awk '{print $2}')
