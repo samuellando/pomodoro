@@ -2,33 +2,71 @@
 #
 # Get timer status
 
+# Check input arguments.
 if [ $# -le 0 ]; then
-  echo "Insuficient input paramteters"
+  echo "Usage: pomodoro [-s profile] [-g] [-k]"
   exit 1
 fi
-if ! [ -f $1 ]; then
-  echo "Missing info file"
-  exit 2
+
+s=0
+k=0
+g=0
+profile="work"
+
+while getopts ":s:i:k" opt; do
+  case $opt in
+    s)
+      echo $OPTARG
+      if [ "$OPTARG" != "" ]; then
+        profile=$OPTARG
+      fi
+      s=1
+      ;;
+    k)
+      k=1
+      ;;
+    i)
+      if [ "$OPTARG" != "" ]; then
+        infofile=$OPTARG
+      fi
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "-$OPTARG requires argument" >&2
+      exit 1
+      ;;
+  esac
+done
+
+
+function update(profile, start) {
+  sed -i "s/^current .*\$/current $profile/" $infofile
+  sed -i "s/^start .*\$/start $start/" $infofile
+}
+
+if [ $g ]; then
+  current=$(cat $infofile | awk '/current/ {print $2}')
+
+  if [ $current = "null" ]; then
+    exit
+  fi
+
+  stime=$(cat $infofile | awk '/start/ {print $2}')
+  time=$(cat $infofile | awk '/'$current' / {print $2}')
+  next=$(cat $infofile | awk '/'$current' / {print $3}')
+
+  remaining=$(( $time - $(date +%s) + $stime ))
+
+  if [ $remaining -le 0 ]; then
+    update($next, $(date +%s))
+    pomodoro -g
+  else
+    min=$(( $remaining / 60 ))
+    sec=$(( $remaining % 60 ))
+    sec=$(printf "%02d" $sec)
+    echo "$current $min:$sec"
+  fi
 fi
-
-current=$(cat $1 | grep "current " | awk '{print $2}')
-if [ $current = "null" ]; then
-  exit
-fi
-stime=$(cat $1 | grep "start " | awk '{print $2}')
-time=$(cat $1 | grep "$current " | awk '{print $2}')
-next=$(cat $1 | grep "$current " | awk '{print $3}')
-
-remaining=$(( $time - $(date +%s) + $stime ))
-
-if [ $remaining -le 0 ]; then
-  sed -i "s/^current .*\$/current $next/" $1
-  sed -i "s/^start .*\$/start $(date +%s)/" $1
-  pomodoro_get $1 
-else
-  min=$(( $remaining / 60 ))
-  sec=$(( $remaining % 60 ))
-  sec=$(printf "%02d" $sec)
-  echo "$current $min:$sec"
-fi
-
