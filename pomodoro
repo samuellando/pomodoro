@@ -67,11 +67,15 @@ while getopts ":sgk" opt; do
 done
 
 if [ $s = 1 ]; then
-  profile=$(list | dmenu)
-
-  if [ $? -ne 0 ]; then
-    exit
+  if [ $# -le 1 ]; then
+    profile=$(list | dmenu)
+    if [ $? -ne 0 ]; then
+      exit
+    fi
+  else
+    profile=$2
   fi
+
 
   update $profile $(date +%s)
 fi
