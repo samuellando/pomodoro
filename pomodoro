@@ -6,7 +6,6 @@
 remaining() {
   stime=$(cat $infofile | awk '/start/ {print $2}')
   time=$(cat $infofile | awk '/'$(current)' / {print $2}')
-
   echo $(( $time - $(date +%s) + $stime ))
 }
 
@@ -75,7 +74,6 @@ if [ $s = 1 ]; then
   else
     profile=$2
   fi
-
 
   update $profile $(date +%s)
 fi
