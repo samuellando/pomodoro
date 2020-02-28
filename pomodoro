@@ -27,10 +27,12 @@ s=0 #Start
 k=0 #Kil
 g=0 #Get time
 profile="work"
-infofile="$HOME/.config/pomodoro/config"
+infodir="$HOME/.config/pomodoro"
+infofile="$infodir/config"
 
 # Check if the info file exists.
 if ! [ -e $infofile ]; then
+  mkdir -p $infodir
   cp /usr/share/doc/pomodoro/config.def $infofile
 fi
 
@@ -48,7 +50,6 @@ if [ $# -le 0 ]; then
   fi
 fi
 
-# Check input arguments.
 while getopts ":sgk" opt; do
   case $opt in
     s)
@@ -93,8 +94,7 @@ if [ $g = 1 ]; then
     update $(next) $(date +%s)
     pomodoro -g
   else
-    min=$(printf "%02d" $(( $(remaining) / 60 )))
-    sec=$(printf "%02d" $(( $(remaining) % 60 )))
-    echo "$(current) $min:$sec"
+    t=$(printf "%02d:%02d" $(( $(remaining) / 60 )) $(( $(remaining) % 60 )))
+    echo "$(current) $t"
   fi
 fi

@@ -3,4 +3,3 @@ start 0
 #profiles format: tag secounds next
 work 100 break
 break 300 work
-warmup 1800 work
