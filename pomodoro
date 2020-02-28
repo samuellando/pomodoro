@@ -1,7 +1,4 @@
 #!/bin/sh
-#
-# Pomodoro timer control.
-#
 
 remaining() {
   stime=$(cat $infofile | awk '/start/ {print $2}')
@@ -30,7 +27,12 @@ s=0 #Start
 k=0 #Kil
 g=0 #Get time
 profile="work"
-infofile="$HOME/.pomodoro.info"
+infofile="$HOME/.config/pomodoro/config"
+
+# Check if the info file exists.
+if ! [ -e $infofile ]; then
+  cp /usr/share/doc/pomodoro/config.def $infofile
+fi
 
 # If no parameters, show dmenu.
 if [ $# -le 0 ]; then 
@@ -61,7 +63,6 @@ while getopts ":sgk" opt; do
     \?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
-      ;;
   esac
 done
 
