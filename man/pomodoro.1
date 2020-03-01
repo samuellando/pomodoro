@@ -1,0 +1,36 @@
+NAME
+pomodoro [-s [profile]] [-k] [-g]
+
+A pomodoro timer manager with a dmenu front end.
+
+SYNOPSIS
+arguments
+
+-s, start, if profile name is omitted, dmenu will be open for the selection.
+
+-k, kill, stops the current timer.
+
+-g, get, Gets the timer status.
+
+DESCRIPTION
+This command uses the ~/.config/pomodoro/config file to determine timer lengths
+and the next timer to move to after the timer is done. When get is run, the 
+timer status will be updated in that file.
+
+EXAMPLES
+pomodoro -s work
+
+Starts the work timer.
+
+SEE ALSO
+dmenu
+notify-send
+
+BUGS
+none
+
+AUTHOR
+Samuel Lando (samuel.lando@aol.com)
+
+COPYRIGHT
+MIT

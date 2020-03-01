@@ -26,7 +26,6 @@ list() {
 s=0 #Start
 k=0 #Kil
 g=0 #Get time
-profile="work"
 infodir="$HOME/.config/pomodoro"
 infofile="$infodir/config"
 
@@ -81,7 +80,7 @@ if [ $s = 1 ]; then
 fi
 
 if [ $k = 1 ]; then
-  update null $(date +%s)
+  update null 0
 fi
 
 if [ $g = 1 ]; then
