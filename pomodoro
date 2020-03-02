@@ -35,13 +35,6 @@ configdir="$HOME/.config/pomodoro"
 configfile="$configdir/config"
 statusfile="$HOME/.pomodoro"
 
-  if [ -e $statusfile ]; then
-    stime=$(cat $statusfile | awk '/start/ {print $2}')
-    time=$(cat $configfile | awk '/'$(current)' / {print $2}')
-    echo "$stime $time"
-    echo $(($stime - $(date +%s) + $time))
-  fi
-
 if ! [ -e $configfile ]; then
   mkdir -p $configdir
   cp /usr/share/doc/pomodoro/config.def $configfile
