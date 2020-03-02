@@ -1,41 +1,52 @@
 #!/bin/sh
 
 remaining() {
-  stime=$(cat $infofile | awk '/start/ {print $2}')
-  time=$(cat $infofile | awk '/'$(current)' / {print $2}')
-  echo $(( $time - $(date +%s) + $stime ))
+  if [ -e $statusfile ]; then
+    stime=$(cat $statusfile | awk '/start/ {print $2}')
+    time=$(cat $configfile | awk '/'$(current)' / {print $2}')
+    echo $(($stime - $(date +%s) + $time))
+  fi
 }
 
 current() {
-  cat $infofile | awk '/current/ {print $2}'
+  if ! [ -e $statusfile ]; then
+    echo "null"
+  else
+    cat $statusfile | awk '/current/ {print $2}'
+  fi
 }
 
 next() {
-  cat $infofile | awk '/'$(current)' / {print $3}'
+  cat $configfile | awk '/'$(current)' / {print $3}'
 }
 
 update() {
-  sed -i "s/^current .*\$/current $1/" $infofile
-  sed -i "s/^start .*\$/start $2/" $infofile
+  printf "current %s\nstart %s" $1 $2 > $statusfile
 }
 
 list() {
-  cat $infofile | awk '/#profiles/{flag=1;next}flag{print $1}'
+  cat $configfile | awk '{print $1}'
 }
 
-s=0 #Start
-k=0 #Kil
-g=0 #Get time
-infodir="$HOME/.config/pomodoro"
-infofile="$infodir/config"
+s=0
+k=0
+g=0
+configdir="$HOME/.config/pomodoro"
+configfile="$configdir/config"
+statusfile="$HOME/.pomodoro"
 
-# Check if the info file exists.
-if ! [ -e $infofile ]; then
-  mkdir -p $infodir
-  cp /usr/share/doc/pomodoro/config.def $infofile
+  if [ -e $statusfile ]; then
+    stime=$(cat $statusfile | awk '/start/ {print $2}')
+    time=$(cat $configfile | awk '/'$(current)' / {print $2}')
+    echo "$stime $time"
+    echo $(($stime - $(date +%s) + $time))
+  fi
+
+if ! [ -e $configfile ]; then
+  mkdir -p $configdir
+  cp /usr/share/doc/pomodoro/config.def $configfile
 fi
 
-# If no parameters, show dmenu.
 if [ $# -le 0 ]; then 
   selection=$(printf "start\nkill" | dmenu)
   if [ $? -ne 0 ]; then
@@ -43,8 +54,7 @@ if [ $# -le 0 ]; then
   fi
   if [ "$selection" = "start" ]; then
     s=1
-  fi
-  if [ "$selection"  = "kill" ]; then
+  else
     k=1
   fi
 fi
@@ -61,7 +71,6 @@ while getopts ":sgk" opt; do
       g=1
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
       exit 1
   esac
 done
@@ -75,25 +84,23 @@ if [ $s = 1 ]; then
   else
     profile=$2
   fi
-
   update $profile $(date +%s)
 fi
 
 if [ $k = 1 ]; then
-  update null 0
+  rm $statusfile
 fi
 
 if [ $g = 1 ]; then
-  if [ $(current) = "null" ]; then
+  if [ "$(current)" = "null" ]; then
     exit 1
-  fi
-
-  if [ $(remaining) -le 0 ]; then
-    notify-send "Timer $(current)" "done"
-    update $(next) $(date +%s)
-    pomodoro -g
   else
-    t=$(printf "%02d:%02d" $(( $(remaining) / 60 )) $(( $(remaining) % 60 )))
-    echo "$(current) $t"
+    if [ $(remaining) -le 0 ]; then
+      notify-send "Timer $(current)" "done"
+      update $(next) $(date +%s)
+      pomodoro -g
+    else
+      echo $(printf "%s %02d:%02d" $(current) $(($(remaining) / 60)) $(($(remaining) % 60)))
+    fi
   fi
 fi
