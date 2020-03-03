@@ -21,7 +21,7 @@ next() {
 }
 
 update() {
-  printf "current %s\nstart %s" $1 $2 > $statusfile
+  printf "current %s\nstart %s" $1 $(date +%s) > $statusfile
 }
 
 list() {
@@ -77,7 +77,7 @@ if [ $s = 1 ]; then
   else
     profile=$2
   fi
-  update $profile $(date +%s)
+  update $profile
 fi
 
 if [ $k = 1 ]; then
@@ -90,7 +90,7 @@ if [ $g = 1 ]; then
   else
     if [ $(remaining) -le 0 ]; then
       notify-send "Timer $(current)" "done"
-      update $(next) $(date +%s)
+      update $(next)
       pomodoro -g
     else
       echo $(printf "%s %02d:%02d" $(current) $(($(remaining) / 60)) $(($(remaining) % 60)))
