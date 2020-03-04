@@ -28,47 +28,48 @@ list() {
   cat $configfile | awk '{print $1}'
 }
 
-s=0
-k=0
-g=0
 configdir="$HOME/.config/pomodoro"
 configfile="$configdir/config"
 statusfile="$HOME/.pomodoro"
 
+# Check for config file, if it doesnt exist, copy the default.
 if ! [ -e $configfile ]; then
   mkdir -p $configdir
   cp /usr/share/doc/pomodoro/config.def $configfile
 fi
 
-if [ $# -le 0 ]; then 
-  selection=$(printf "start\nkill" | dmenu)
-  if [ $? -ne 0 ]; then
-    exit
-  fi
-  if [ "$selection" = "start" ]; then
-    s=1
-  else
-    k=1
-  fi
-fi
-
+# Set flags for the arguments.
 while getopts ":sgk" opt; do
   case $opt in
     s)
-      s=1
+      s=0
       ;;
     k)
-      k=1
+      k=0
       ;;
     g)
-      g=1
+      g=0
       ;;
     \?)
       exit 1
   esac
 done
 
-if [ $s = 1 ]; then
+# If no input arguments, show a simple menu.
+if [ $# -le 0 ]; then 
+  selection=$(printf "start\nkill" | dmenu)
+  if [ $? -ne 0 ]; then
+    exit
+  fi
+  if [ "$selection" = "start" ]; then
+    s=0
+  else
+    k=0
+  fi
+fi
+
+# Handlers.
+if [ $s ]; then
   if [ $# -le 1 ]; then
     profile=$(list | dmenu)
     if [ $? -ne 0 ]; then
@@ -80,11 +81,11 @@ if [ $s = 1 ]; then
   update $profile
 fi
 
-if [ $k = 1 ]; then
+if [ $k ]; then
   rm $statusfile
 fi
 
-if [ $g = 1 ]; then
+if [ $g ]; then
   if [ "$(current)" = "null" ]; then
     exit 1
   else
