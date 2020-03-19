@@ -9,11 +9,7 @@ remaining() {
 }
 
 current() {
-  if ! [ -e $statusfile ]; then
-    echo "null"
-  else
-    cat $statusfile | awk '/current/ {print $2}'
-  fi
+  ! [ -e $statusfile ] && echo "null" || cat $statusfile | awk '/current/ {print $2}'
 }
 
 next() {
@@ -58,43 +54,30 @@ done
 # If no input arguments, show a simple menu.
 if [ $# -le 0 ]; then 
   selection=$(printf "start\nkill" | dmenu)
-  if [ $? -ne 0 ]; then
-    exit
-  fi
-  if [ "$selection" = "start" ]; then
-    s=0
-  else
-    k=0
-  fi
+  [ $? -ne 0 ] && exit
+  [ "$selection" = "start" ] && s=0 || k=0
 fi
 
 # Handlers.
 if [ $s ]; then
   if [ $# -le 1 ]; then
     profile=$(list | dmenu)
-    if [ $? -ne 0 ]; then
-      exit
-    fi
+    [ $? -ne 0 ] && exit
   else
     profile=$2
   fi
   update $profile
 fi
 
-if [ $k ]; then
-  rm $statusfile
-fi
+[ $k ] && rm $statusfile
 
 if [ $g ]; then
-  if [ "$(current)" = "null" ]; then
-    exit 1
+  [ "$(current)" = "null" ] && exit 1
+  if [ $(remaining) -le 0 ]; then
+    notify-send "Timer $(current)" "done"
+    update $(next)
+    pomodoro -g
   else
-    if [ $(remaining) -le 0 ]; then
-      notify-send "Timer $(current)" "done"
-      update $(next)
-      pomodoro -g
-    else
-      echo $(printf "%s %02d:%02d" $(current) $(($(remaining) / 60)) $(($(remaining) % 60)))
-    fi
+    echo $(printf "%s %02d:%02d" $(current) $(($(remaining) / 60)) $(($(remaining) % 60)))
   fi
 fi
