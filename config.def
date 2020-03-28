@@ -1,5 +1,2 @@
-current null
-start 0
-#profiles format: tag secounds next
-work 100 break
+work 1500 break
 break 300 work

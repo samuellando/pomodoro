@@ -26,7 +26,7 @@ list() {
 
 configdir="$HOME/.config/pomodoro"
 configfile="$configdir/config"
-statusfile="$HOME/.pomodoro"
+statusfile="/tmp/.pomodoro"
 
 # Check for config file, if it doesnt exist, copy the default.
 if ! [ -e $configfile ]; then
