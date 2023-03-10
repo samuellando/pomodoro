@@ -1,36 +1,30 @@
-NAME
-pomodoro [-s [profile]] [-k] [-g]
+.\" Process with groff -man -Tascii pomodoro.1
+.TH POMODORO 1 "MARCH 2023" Linux "User Manuals"
+.SH NAME
+pomodoro \- A pomodoro timer manager with a dmenu front end. 
+.SH SYNOPSIS
+ pomodoro [-s [profile]] [-k] [-g]
 
-A pomodoro timer manager with a dmenu front end.
+ -s, start, if profile name is omitted, dmenu will be open for the selection.
 
-SYNOPSIS
-arguments
+ -k, kill, stops the current timer.
 
--s, start, if profile name is omitted, dmenu will be open for the selection.
-
--k, kill, stops the current timer.
-
--g, get, Gets the timer status.
-
-DESCRIPTION
-This command uses the ~/.config/pomodoro/config file to determine timer lengths
-and the next timer to move to after the timer is done. When get is run, the 
-timer status will be updated in that file.
-
-EXAMPLES
+ -g, get, Gets the timer status.
+.SH DESCRIPTION
+.B This command uses the ~/.config/pomodoro/config file to determine timer lengths
+.B and the next timer to move to after the timer is done. When get is run, the 
+.B timer status will be updated in that file.
+.SH EXAMPLES
 pomodoro -s work
 
 Starts the work timer.
-
-SEE ALSO
-dmenu
-notify-send
-
-BUGS
+.SH SEE ALSO
+.BR dmenu(1), 
+.BR notify-send(1)
+.SH BUGS
 none
-
-AUTHOR
+.SH AUTHOR
 Samuel Lando (samuel.lando@aol.com)
 
-COPYRIGHT
-MIT
+.SH COPYRIGHT MIT
+.I Formatted man page by Joey Scanga (https://github.com/joey-scanga)
